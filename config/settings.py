@@ -140,10 +140,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Jazzmin Admin UI Theme Configuration
 JAZZMIN_SETTINGS = {
-    "site_title": "Customizer Admin",
-    "site_header": "Customizer Studio",
-    "site_brand": "Customizer Studio",
-    "welcome_sign": "Welcome to Customizer Admin Studio",
+    "site_title": "Salvin Customizer Admin",
+    "site_header": "Salvin Customizer",
+    "site_brand": "Salvin Customizer",
+    "welcome_sign": "Salvin's Customization Studio",
     "copyright": "Salvin Customizer Ltd",
     "user_avatar": None,
     "topmenu_links": [
