@@ -33,6 +33,7 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -136,3 +137,40 @@ CELERY_TASK_SERIALIZER = 'json'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Jazzmin Admin UI Theme Configuration
+JAZZMIN_SETTINGS = {
+    "site_title": "Customizer Admin",
+    "site_header": "Customizer Studio",
+    "site_brand": "Customizer Studio",
+    "welcome_sign": "Welcome to Customizer Admin Studio",
+    "copyright": "Salvin Customizer Ltd",
+    "user_avatar": None,
+    "topmenu_links": [
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"model": "auth.User"},
+    ],
+    "usermenu_links": [
+        {"model": "auth.User"},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "customizer.Product": "fas fa-tshirt",
+        "customizer.ProductView": "fas fa-image",
+        "customizer.Design": "fas fa-palette",
+        "customizer.RenderJob": "fas fa-tasks",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+}
+
+JAZZMIN_UI_CHANGES = {
+    "theme": "flatly",
+    "dark_mode_theme": "darkly",
+}
