@@ -13,11 +13,14 @@ import io
 def seed_database():
     # 1. Create Superuser
     User = get_user_model()
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'adminpass123')
-        print("Superuser 'admin' created successfully with password 'adminpass123'")
+    custom_username = 'salvinsebastian308@gmail.com'
+    custom_password = '*Sa8590796458*'
+    
+    if not User.objects.filter(username=custom_username).exists():
+        User.objects.create_superuser(custom_username, custom_username, custom_password)
+        print(f"Superuser '{custom_username}' created successfully.")
     else:
-        print("Superuser 'admin' already exists")
+        print(f"Superuser '{custom_username}' already exists")
 
     # 2. Check if a product already exists
     if Product.objects.count() == 0:
