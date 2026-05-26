@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Performance Product Customizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255,255,255,0.1);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+        main {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            flex-wrap: wrap;
+        }
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        label {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        select, input[type="file"] {
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="file"]:focus {
+            border-color: var(--primary);
+        }
+        .upload-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+            margin-top: 1rem;
+        }
+        .upload-btn:hover {
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+        .preview-area {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        #result-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Customizer Studio</h1>
+        <p class="subtitle">Bring your designs to life on premium products</p>
+    </header>
+
+    <main>
+        <div class="panel">
+            <h2>Configure</h2>
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="product_view_id">Select Product & View</label>
+                    <select id="product_view_id" name="product_view_id" required>
+                        <option value="">-- Choose a view --</option>
+                        {% for product in products %}
+                            <optgroup label="{{ product.name }}">
+                                {% for view in product.views.all %}
+                                    <option value="{{ view.id }}">{{ view.view_name }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="design_image">Upload Design (PNG/JPG)</label>
+                    <input type="file" id="design_image" name="design_image" accept="image/*" required>
+                </div>
+                
+                <button type="submit" class="upload-btn">Generate Preview</button>
+            </form>
+        </div>
+
+        <div class="panel preview-area">
+            <div class="spinner" id="spinner"></div>
+            <img id="result-img" alt="Rendered Result">
+            <div class="status-badge" id="status-badge">Pending</div>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const spinner = document.getElementById('spinner');
+        const resultImg = document.getElementById('result-img');
+        const statusBadge = document.getElementById('status-badge');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            spinner.style.display = 'block';
+            resultImg.style.display = 'none';
+            statusBadge.style.display = 'block';
+            statusBadge.textContent = 'Uploading...';
+            statusBadge.style.color = 'var(--text-main)';
+
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/api/upload/', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if(data.job_id) {
+                    pollStatus(data.job_id);
+                } else {
+                    showError(data.error || 'Upload failed');
+                }
+            } catch (err) {
+                showError('Network error');
+            }
+        });
+
+        async function pollStatus(jobId) {
+            try {
+                const response = await fetch(`/api/status/${jobId}/`);
+                const data = await response.json();
+                
+                statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                
+                if (data.status === 'completed') {
+                    spinner.style.display = 'none';
+                    resultImg.src = data.result_image;
+                    resultImg.style.display = 'block';
+                    statusBadge.style.color = '#4ade80'; // Green
+                } else if (data.status === 'failed') {
+                    showError(data.error_message || 'Rendering failed');
+                } else {
+                    setTimeout(() => pollStatus(jobId), 1000);
+                }
+            } catch (err) {
+                showError('Error checking status');
+            }
+        }
+
+        function showError(msg) {
+            spinner.style.display = 'none';
+            statusBadge.textContent = 'Error';
+            statusBadge.style.color = '#f87171'; // Red
+            alert(msg);
+        }
+    </script>
+</body>
+</html>
