@@ -1,0 +1,57 @@
+services:
+  # 1. Django Web Service
+  - type: web
+    name: product-customizer-web
+    env: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: product-customizer-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: product-customizer-redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
+
+  # 2. Celery Background Worker
+  - type: worker
+    name: product-customizer-worker
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A config worker --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: product-customizer-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: product-customizer-redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+
+  # 3. Redis Instance
+  - type: redis
+    name: product-customizer-redis
+    plan: free
+    ipAllowList: [] # Only allow internal traffic
+
+databases:
+  # 4. PostgreSQL Database
+  - name: product-customizer-db
+    plan: free
